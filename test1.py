@@ -180,7 +180,7 @@ def analyze_and_report(file_path, label):
     "entities": entities,
     "dates": dates,
     "freqs": freqs,
-    "doc": result["doc"],  # ✅ aggiunto
+    "doc": result["doc"],
     }
 # Eseguiamo solo il primo file
 data1 = analyze_and_report(FILE1, "Giustiniano - Institutes1")
@@ -316,7 +316,7 @@ stylistic_analysis(doc)
 # Curva cumulativa frequenze
 plot_cumulative_freq(freqs)
 
-# Confronto con se stesso (esempio)
+# Confronto 
 #plot_similarity_matrix(freqs, freqs) DA UTILIZZARE CON SECONDO TESTO 
 
 
@@ -356,6 +356,7 @@ for word in doc.words:
         print(word.string, word.upos, vf)
     except CLTKException:
         pass
+
 
 
 

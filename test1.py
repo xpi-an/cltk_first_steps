@@ -1,5 +1,5 @@
 # %%
-# SEZIONE 1 - Import e setup iniziale
+# SECTION 1 – Imports and Initial Setup
 # --------------------------------------------------
 
 import os
@@ -13,17 +13,16 @@ import cltk
 from cltk import NLP
 from gensim import corpora, models
 from geopy.geocoders import Nominatim
+import stanza
+stanza.download("la")
 
 print("Tutte le librerie caricate correttamente.")
 
 
-# %%
-import stanza
-stanza.download("la")
 
 
 # %%
-# SEZIONE 2 - Percorsi testi
+# SECTION 2 – Text File Paths
 # --------------------------------------------------
 
 CORPUS_DIR = Path("lat_text_latin_library-master")
@@ -35,7 +34,7 @@ print(f"Testo 2: {FILE2}")
 
 
 # %%
-# SEZIONE 3 - Funzioni per analizzare il testo
+# SECTION 3 – Functions for Text Analysis
 # --------------------------------------------------
 
 def read_text(filepath):
@@ -47,14 +46,14 @@ nlp = NLP(language="lat")
 def analyze_text(text):
     doc = nlp(text)
 
-    tokens = doc.tokens  # è una lista di stringhe
-    lemmas = doc.lemmata  # lista dei lemmi
-    pos_tags = doc.pos     # lista di POS tags
+    tokens = doc.tokens
+    lemmas = doc.lemmata
+    pos_tags = doc.pos
     
-    # Non esiste doc.entities, quindi entità vuote
+    # doc.entities does not exist, therefore the entity list is empty
     entities = []
     
-    sentences = doc.sentences_strings  # lista di frasi come stringhe
+    sentences = doc.sentences_strings  # List of sentences (as strings)
 
     return {
         "tokens": tokens,
@@ -127,20 +126,20 @@ import time
 from cltk import NLP
 
 start = time.time()
-nlp = NLP(language="lat")  # se è già stato importato prima, sarà più veloce
-doc = nlp.analyze("In principio creavit Deus caelum et terram.")  # frase breve di prova
+nlp = NLP(language="lat")  # If already imported, it will run faster
+doc = nlp.analyze("In principio creavit Deus caelum et terram.")  # A short sample sentence
 end = time.time()
 
 print("Tempo impiegato:", round(end - start, 2), "secondi")
 
 
 # %%
-# Lista base di stopwords latine
+# Basic Latin stopword list
 latin_stopwords = {
     'et','i', 'in', 'de', 'non', 'ad', 'per', 'cum', 'ex', 'atque',
     'aut', 'sed', 'ut', 'si', 'sicut', 'qui', 'quae', 'quod',
     'is', 'ea', 'id', 'ego', 'tu', 'nos', 'vos', 'hic', 'ille','vel','sum', 'do', 'suus'
-    # Aggiungi altre stopwords se vuoi
+    # additional stopwords to add as needed
 }
 
 def clean_lemmas(lemmas):
@@ -182,14 +181,14 @@ def analyze_and_report(file_path, label):
     "freqs": freqs,
     "doc": result["doc"],
     }
-# Eseguiamo solo il primo file
+
 data1 = analyze_and_report(FILE1, "Giustiniano - Institutes1")
 
 # %%
 from collections import Counter
 def stylistic_analysis(doc):
     sentences = doc.sentences
-    tokens = doc.words  # usa words, non tokens, perché words ha gli oggetti Word
+    tokens = doc.words # Using 'words', not 'tokens', because 'words' contains Word objects
     
     lunghezza_media_frasi = sum(len(sent.words) for sent in sentences) / len(sentences)
     lunghezza_media_parole = sum(len(word.string) for word in tokens) / len(tokens)
@@ -209,14 +208,14 @@ def morphosyntactic_analysis(doc):
     voci = Counter()
     forme = Counter()
     count_verbi = 0
-    dettagli = []  # per la stampa a schermo
+    dettagli = [] 
 
     for word in doc.words:
         try:
             verb_form = word.features["VerbForm"]
             forme[", ".join(str(v) for v in verb_form)] += 1
 
-            # Se è un verbo finito
+            # If it is a finite verb
             if any(str(v).lower() == "finite" for v in verb_form):
                 try:
                     tense = str(word.features["Tense"][0])
@@ -251,7 +250,7 @@ def morphosyntactic_analysis(doc):
         except (CLTKException, KeyError):
             forme["None"] += 1
 
-    # Statistiche
+    # stats
     print(f"Totale verbi (tutte le forme): {sum(forme.values())}")
     print(f"Distribuzione forme verbali: {dict(forme)}\n")
     print(f"Verbi finiti analizzati: {count_verbi}")
@@ -259,7 +258,7 @@ def morphosyntactic_analysis(doc):
     print(f"Distribuzione modi verbali: {dict(modi)}")
     print(f"Distribuzione voci verbali: {dict(voci)}")
 
-    # Elenco dettagliato
+    # detailed list
     print("\nElenco verbi finiti:")
     print(f"{'Token':<15} {'Lemma':<15} {'UPOS':<8} {'VerbForm':<20} {'Tense':<8} {'Mood':<10} {'Voice':<8}")
     print("-" * 90)
@@ -307,24 +306,24 @@ def plot_similarity_matrix(freqs1, freqs2):
 doc = data1["doc"]
 freqs = data1["freqs"]
 
-# Analisi morfosintattica
+# Morphosyntactic analysis
 morphosyntactic_analysis(doc)
 
-# Analisi stilistica
+# Stylistic analysis
 stylistic_analysis(doc)
 
-# Curva cumulativa frequenze
+# Cumulative frequency curve
 plot_cumulative_freq(freqs)
 
-# Confronto 
-#plot_similarity_matrix(freqs, freqs) DA UTILIZZARE CON SECONDO TESTO 
+# Comparison
+# plot_similarity_matrix(freqs, freqs) TO USE WITH A SECOND TEXT
 
 
 
 # %%
 for word in doc.words:
     if word.upos == "VERB":
-        # Prova a prendere il valore di VerbForm usando l'accesso diretto, se c'è
+        # Try to get the VerbForm value using direct access, if it exists
         verb_form = word.features["VerbForm"] if "VerbForm" in word.features else None
         if verb_form is None or verb_form == []:
             print(f"Verbo senza VerbForm: {word.string} - features: {word.features}")
@@ -356,6 +355,7 @@ for word in doc.words:
         print(word.string, word.upos, vf)
     except CLTKException:
         pass
+
 
 
 
